@@ -21,3 +21,11 @@
 
 Java
 
+## Контакты
+
+[Отправить письмо](mailto:derecov+callstopspam@gmail.com)
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
