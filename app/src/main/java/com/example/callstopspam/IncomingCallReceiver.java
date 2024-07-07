@@ -28,53 +28,17 @@ public class IncomingCallReceiver extends BroadcastReceiver {
 
 //        Log.d("intent_0", "intent: 0" + intent.getAction());
 
-
         SharedPreferences sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         boolean receiverEnabled = sharedPref.getBoolean(RECEIVER_ENABLED_KEY, false);
 
-//        if ("android.intent.action.PHONE_STATE".equals(intent.getAction())) {
 //        Log.d("receiverEnabled", "receiverEnabled: " + receiverEnabled);
 
         if (receiverEnabled) {
-//            ITelephony telephonyService;
             try {
                 String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                 String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
                 if (state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING)) {
-                    TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-
-
-//                try {
-//                    @SuppressLint("SoonBlockedPrivateApi") Method m = tm.getClass().getDeclaredMethod("getITelephony");
-//
-//                    m.setAccessible(true);
-//                    telephonyService = (ITelephony) m.invoke(tm);
-//
-////                    if (!contactExists2(context, number)) {
-//                    if (number != null && !isNumberInContacts(context, number)) {
-////                        telephonyService.endCall();
-//                        disconnectCall();
-//                        Toast.makeText(context, "Ending the call from: " + number, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-
-//                if (!isNumberInContacts(context, number)) {
-//                    disconnectCall();
-//                    Toast.makeText(context, "Ending 3: " + number, Toast.LENGTH_SHORT).show();
-//                }
-
-
-//                if (!contactExists(context, number)) {
-////                    if (number != null && !isNumberInContacts(context, number)) {
-////                        telephonyService.endCall();
-//                    disconnectCall();
-//                    Toast.makeText(context, "Ending 2: " + number, Toast.LENGTH_SHORT).show();
-//                }
-
 
 //                    Log.d("number", "number: " + number);
 //                // Удаляем все символы, кроме цифр
@@ -92,83 +56,43 @@ public class IncomingCallReceiver extends BroadcastReceiver {
 
 //                    Log.d("cleanedPhoneNumber", "cleanedPhoneNumber: " + number);
 
-//                if (!contactExists(context, number)) {
-//                    Toast.makeText(context, "Ring " + number, Toast.LENGTH_SHORT).show();
+//                    if (!contactExists(context, number)) {
                     if (!isNumberInContacts(context, number)) {
-//                        telephonyService.endCall();
-
                         disconnectCall();
-
-//                    Toast.makeText(context, "Ending the call from: " + number, Toast.LENGTH_SHORT).show();
                     }
-
-//                Toast.makeText(context, "Ring " + number, Toast.LENGTH_SHORT).show();
 
                 }
 
-
-//            if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_OFFHOOK)){
-//                Toast.makeText(context, "Answered " + number, Toast.LENGTH_SHORT).show();
-//            }
-//            if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_IDLE)){
-//                Toast.makeText(context, "Idle "+ number, Toast.LENGTH_SHORT).show();
-//            }
             } catch (Exception e) {
                 Log.e("Exception", "Exception: " + e);
             }
-//            }
         }
-//        }
     }
 
-//    public boolean contactExists(Context context, String number) {
-//        if (number != null) {
-////            Log.d("number", "number: " + number);
-//            ContentResolver cr = context.getContentResolver();
-//            Cursor curContacts = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-//
-//            while (curContacts.moveToNext()) {
-//                @SuppressLint("Range") String contactNumber = curContacts.getString(curContacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-//
-////                Log.d("contactNumber", "contactNumber: " + contactNumber);
-//
-////                if (number.equals(contactNumber)) {
-//                if (number.equals(contactNumber.replaceAll("[\\s()\\-]+", ""))) {
-//                    return true;
-//                }
-//            }
-//            return false;
-//        } else {
-//            return false;
-//        }
-//    }
+    //    slow
+    public boolean contactExists(Context context, String number) {
+        number = number.replaceAll("[\\s()\\-]+", "");
 
-//    public boolean contactExists2(Context context, String number) {
-//        if (number != null) {
-//            /// number is the phone number
-////            String cleanedNumber = number.replaceAll("[\\s()\\-]+", "");
-////            Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, cleanedNumber);
-//            Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number));
-////            String[] mPhoneNumberProjection = {ContactsContract.PhoneLookup.NUMBER.replaceAll("[\\s()\\-]+", "")};
-//            String[] mPhoneNumberProjection = {ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME};
-//            try (Cursor cur = context.getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null)) {
-//                if (cur.moveToFirst()) {
-//                    return true;
-//                }
-//            } finally {
-//                return false;
-//            }
-//        }
-//        return false;
-//    }
+        ContentResolver cr = context.getContentResolver();
+        Cursor curContacts = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
 
-//    public static void setEnabled(Context context, boolean isEnabled) {
-//        SharedPreferences sharedPref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPref.edit();
-//        editor.putBoolean(RECEIVER_ENABLED_KEY, isEnabled);
-//        editor.apply();
-//    }
+        while (curContacts.moveToNext()) {
+            @SuppressLint("Range") String contactNumber = curContacts.getString(curContacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
+//            Log.d("contactNumber", "contactNumber: " + contactNumber);
+
+            if (contactNumber.charAt(0) == '8') {
+                contactNumber = "+7" + contactNumber.substring(1);
+            }
+
+            if (number.equals(contactNumber.replaceAll("[\\s()\\-]+", ""))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //    fast
     private boolean isNumberInContacts(Context context, String phoneNumber) {
         if (phoneNumber != null) {
             ContentResolver contentResolver = context.getContentResolver();
